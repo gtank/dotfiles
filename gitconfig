@@ -1,0 +1,14 @@
+# Actually check that hashes match the content we receive
+[transfer]
+    fsckobjects = true
+[fetch]
+    fsckobjects = true
+[receive]
+    fsckObjects = true
+[user]
+    name = George Tankersley
+    email = george.tankersley@gmail.com
+[core]
+    editor = vim
+[http]
+    cookiefile = /home/user/.gitcookies

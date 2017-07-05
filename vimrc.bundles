@@ -1,0 +1,35 @@
+" These are universally installed plugins
+" Create ~/.vimrc.bundles.local for any locally-specific bundles
+
+" Let Vundle manage itself (required)
+Plugin 'gmarik/Vundle.vim'
+
+                                          " Interface
+Plugin 'ctrlpvim/ctrlp.vim'               " fuzzy file content search
+Plugin 'scrooloose/nerdtree'              " file browser
+Plugin 'majutsushi/tagbar'                " ctags sidebar
+Plugin 'airblade/vim-gitgutter'           " git diff sidebar
+Plugin 'vim-airline/vim-airline'          " fancy statusline
+Plugin 'vim-airline/vim-airline-themes'   " fancy statusline themes
+Plugin 'altercation/vim-colors-solarized' " solarized theme
+Plugin 'nathanaelkane/vim-indent-guides'  " visual indent levels
+
+                                          " Command extensions
+Plugin 'tpope/vim-commentary'             " gc family of comment commands
+Plugin 'tpope/vim-repeat'                 " . repeat support for plugin maps
+Plugin 'tpope/vim-surround'               " changes surrounding text
+Plugin 'junegunn/vim-easy-align'          " newer Align
+
+
+                                          " External tools
+Plugin 'scrooloose/syntastic'             " external syntax checking
+Plugin 'mileszs/ack.vim'                  " ack w/ ag integration in vimrc
+Plugin 'tpope/vim-fugitive'               " git wrapper
+Plugin 'christoomey/vim-tmux-navigator'   " hjkl for tmux panes (see tmux.conf)
+Plugin 'tpope/vim-dispatch'               " async jobs with tmux/screen
+
+                                          " Filetype support
+Plugin 'fatih/vim-go'                     " extensive golang support
+Plugin 'pangloss/vim-javascript'          " js support
+Plugin 'godlygeek/tabular'                " tabular must come before vim-markdown
+Plugin 'plasticboy/vim-markdown'
