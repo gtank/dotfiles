@@ -33,3 +33,4 @@ Plugin 'fatih/vim-go'                     " extensive golang support
 Plugin 'pangloss/vim-javascript'          " js support
 Plugin 'godlygeek/tabular'                " tabular must come before vim-markdown
 Plugin 'plasticboy/vim-markdown'
+Plugin 'rust-lang/rust.vim'
