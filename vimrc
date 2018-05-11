@@ -1,11 +1,7 @@
-" Required for Vundle. Also just better.
-set nocompatible
-
-" Enable syntax highlighting
-syntax enable
-
-" BEGIN Vundle config
+" === BEGIN Vundle config === "
 " See https://github.com/VundleVim/Vundle.vim/blob/master/doc/vundle.txt
+
+set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -13,13 +9,18 @@ call vundle#begin()
 " Install bundles from dedicated files
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
+endif
+
+" Install machine-specific bundles from dedicated files
+if filereadable(expand("~/.vimrc.bundles.local"))
   source ~/.vimrc.bundles.local
 endif
 
 call vundle#end()
 filetype plugin indent on
-" END Vundle config
+" === END Vundle config === "
 
+syntax enable               " enable syntax highlighting
 set autoindent
 set autoread                " reload files when changed on disk
 set backspace=2             " equivalent to backspace=indent,eol,start
@@ -31,6 +32,7 @@ set display+=lastline       " show partial last lines instead of "@"
 set encoding=utf-8
 set expandtab               " expand tabs to spaces
 set formatoptions+=j        " delete comment character when joining commented lines
+set hidden                  " allow hidden buffers
 set ignorecase              " case-insensitive search
 set incsearch               " search as you type
 set laststatus=2            " always show statusline
@@ -56,57 +58,53 @@ set wildmenu                " show a navigable menu for tab completion
 set wildmode=longest:full,full
 set whichwrap+=<,>,h,l,[,]  " wrap arrow keys between lines
 
-" === Terminal settings === "
-
-" Allow color schemes to do bright colors without forcing bold
-if &t_Co == 8 && $TERM !~# '^linux\|^ETerm'
-  set t_Co=16
-endif
-
-" Enable basic mouse behavior such as resizing buffers.
-set mouse=a
-if exists('$TMUX')  " Support resizing in tmux
-  set ttymouse=xterm2
-endif
-
-" automatically rebalance windows on vim resize
-autocmd VimResized * :wincmd =
-
-" Fix Cursor in tmux
-if exists('$TMUX')
-  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-else
-  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-endif
 
 " === Command mappings === "
 
 let mapleader = ','
 
-" Use <C-L> to clear the highlighting of :set hlsearch.
-if maparg('<C-L>', 'n') ==# ''
-  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
-endif
-
 " In case you forgot to sudo
 cnoremap w!! %!sudo tee > /dev/null %
 
-" Plugin features
+" Tab navigation
+nnoremap <leader>= :tabn<CR>
+nnoremap <leader>- :tabp<CR>
+
+" Clear trailing whitespace
+nnoremap <leader><space> :%s/\s\+$//<CR>
+
+" Clear highlights
+nnoremap <leader>c :nohl<CR>
+
+" Reload vimrc
+nnoremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+
 nmap <leader>l :EasyAlign
-vmap <leader>l :EasyAlign
 nnoremap <leader>a :Ack<space>
 nnoremap <leader>b :CtrlPBuffer<CR>
-nnoremap <leader>d :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeFind<CR>
 nnoremap <leader>t :CtrlP<CR>
 nnoremap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
 nnoremap <leader>] :TagbarToggle<CR>
-nnoremap <leader><space> :%s/\s\+$//<CR>
-nnoremap <leader>g :GitGutterToggle<CR>
-nnoremap <leader>s :GBlame<CR>
-nnoremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+nnoremap <leader>B :Gblame<CR>
+
+" FYI: <leader>ig toggles indent guides
+
+
+" === NERDTree config === "
+
+" Open NERDTree pane automatically when vim starts with no input specified
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" Close vim if the tree pane is the only thing still open
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+nnoremap <leader>d :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
+
+let g:NERDSpaceDelims=1
+
+
+" === vim-go === "
 
 " Use vim-go calls only when editing Go files
 au FileType go nnoremap <leader>I :GoImports<CR>
@@ -114,19 +112,7 @@ au FileType go nnoremap <leader>R :GoRename<CR>
 au FileType go nnoremap <leader>S <Plug>(go-implements)
 au FileType go let b:dispatch = 'go test'
 
-" FYI: <leader>ig toggles indent guides
-
-" don't copy the contents of an overwritten selection.
-vnoremap p "_dP
-
-" === Plugin Settings === "
-
-let g:ctrlp_match_window = 'order:ttb,max:20'
-let g:NERDSpaceDelims=1
-
-let g:gitgutter_enabled = 0
-let g:gitgutter_highlight_lines = 1
-
+" Run go-fmt on save
 let g:go_fmt_autosave = 1
 
 " tagbar support for Go highlighting
@@ -158,8 +144,17 @@ let g:tagbar_type_go = {
     \ 'ctagsargs' : '-sort -silent'
 \ }
 
-" airline, the fancy statusbar
-let g:airline_theme='solarized'
+
+" === gitgutter settings === "
+
+nnoremap <leader>G :GitGutterToggle<CR>
+let g:gitgutter_enabled = 0
+let g:gitgutter_highlight_lines = 1
+
+
+" === ctrlp fuzzy search === "
+
+let g:ctrlp_match_window = 'order:ttb,max:20'
 
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
@@ -182,13 +177,50 @@ if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
 endif
 
 
-" === Filetype settings === "
+" === Filetypes === "
 
 " md is markdown
 autocmd BufRead,BufNewFile *.md set filetype=markdown
 
 
+" === Terminal settings === "
+
+" Allow color schemes to do bright colors without forcing bold
+if &t_Co == 8 && $TERM !~# '^linux\|^ETerm'
+  set t_Co=16
+endif
+
+" Enable basic mouse behavior such as resizing buffers.
+set mouse=a
+if exists('$TMUX')  " Support resizing in tmux
+  set ttymouse=xterm2
+endif
+
+" automatically rebalance windows on vim resize
+autocmd VimResized * :wincmd =
+
+" Fix Cursor in tmux
+if exists('$TMUX')
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+else
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
+
+" Solarized dark
+if !empty(glob("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
+  set background=dark
+  colorscheme solarized
+  " airline, the fancy statusbar
+  let g:airline_theme='solarized'
+endif
+
+
 " === Random sensibility === "
+
+" don't copy the contents of an overwritten selection.
+vnoremap p "_dP
 
 if has('path_extra')
   setglobal tags-=./tags tags-=./tags; tags^=./tags;
@@ -206,13 +238,9 @@ if has('syntax') && !exists('g:syntax_on')
   syntax enable
 endif
 
-" Solarized dark
-if !empty(glob("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
-  set background=dark
-  colorscheme solarized
-endif
 
-" Source locally-specific changes
+" === Locally-specific settings === "
+
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
