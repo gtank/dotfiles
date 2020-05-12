@@ -20,41 +20,22 @@ call vundle#end()
 filetype plugin indent on
 " === END Vundle config === "
 
-syntax enable               " enable syntax highlighting
-set autoindent
-set autoread                " reload files when changed on disk
-set backspace=2             " equivalent to backspace=indent,eol,start
-set backupcopy=yes          " see :help crontab
 set clipboard=unnamed       " yank and paste with the system clipboard
-set complete-=i             " don't complete from include files (it's slow)
 set directory-=.            " don't store swapfiles in the current directory
-set display+=lastline       " show partial last lines instead of "@"
-set encoding=utf-8
 set expandtab               " expand tabs to spaces
 set formatoptions+=j        " delete comment character when joining commented lines
 set hidden                  " allow hidden buffers
 set ignorecase              " case-insensitive search
-set incsearch               " search as you type
-set laststatus=2            " always show statusline
 set list                    " show tabs and trailing whitespace
 set listchars=tab:▸\ ,trail:▫
 set number                  " show line numbers
-set nrformats-=octal        " ignore octal numbers for auto inc/dec commands
-set ruler                   " show where you are
-set scrolloff=3             " always show a few lines of context above/below cursor
-set sidescrolloff=5         " always show a few columns to the left/right of cursor
-set shell=/bin/bash         " use bash
 set showcmd
 set smartcase               " case-sensitive search if any caps
-set smarttab                " use shiftwidth instead of tabstop at the beginning of lines
 set shiftwidth=4            " normal mode indentation commands use 4 spaces
 set softtabstop=4           " insert mode tab and backspace use 4 spaces
 set sessionoptions-=options " don't persist global options across session restore
 set tabstop=4               " actual tabs occupy 4 characters
-set ttimeout                " short timeout for partial commands
-set ttimeoutlen=100
 set wildignore+=tmp/**,vendor/**
-set wildmenu                " show a navigable menu for tab completion
 set wildmode=longest:full,full
 set whichwrap+=<,>,h,l,[,]  " wrap arrow keys between lines
 
@@ -72,9 +53,6 @@ nnoremap <leader>- :tabp<CR>
 
 " Clear trailing whitespace
 nnoremap <leader><space> :%s/\s\+$//<CR>
-
-" Clear highlights
-nnoremap <leader>c :nohl<CR>
 
 " Reload vimrc
 nnoremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
@@ -171,12 +149,6 @@ if executable('ag')
   let g:ackprg = 'ag --vimgrep --smart-case'
 endif
 
-" Load matchit.vim, but only if the user hasn't installed a newer version.
-if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
-  runtime! macros/matchit.vim
-endif
-
-
 " === Filetypes === "
 
 " md is markdown
@@ -184,11 +156,6 @@ autocmd BufRead,BufNewFile *.md set filetype=markdown
 
 
 " === Terminal settings === "
-
-" Allow color schemes to do bright colors without forcing bold
-if &t_Co == 8 && $TERM !~# '^linux\|^ETerm'
-  set t_Co=16
-endif
 
 " Enable basic mouse behavior such as resizing buffers.
 set mouse=a
@@ -214,28 +181,6 @@ if !empty(glob("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
   colorscheme solarized
   " airline, the fancy statusbar
   let g:airline_theme='solarized'
-endif
-
-
-" === Random sensibility === "
-
-" don't copy the contents of an overwritten selection.
-vnoremap p "_dP
-
-if has('path_extra')
-  setglobal tags-=./tags tags-=./tags; tags^=./tags;
-endif
-if &history < 1000
-  set history=1000
-endif
-if &tabpagemax < 50
-  set tabpagemax=50
-endif
-if !empty(&viminfo)
-  set viminfo^=!
-endif
-if has('syntax') && !exists('g:syntax_on')
-  syntax enable
 endif
 
 

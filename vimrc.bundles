@@ -13,6 +13,7 @@ Plugin 'vim-airline/vim-airline'          " fancy statusline
 Plugin 'vim-airline/vim-airline-themes'   " fancy statusline themes
 Plugin 'altercation/vim-colors-solarized' " solarized theme
 Plugin 'nathanaelkane/vim-indent-guides'  " visual indent levels
+Plugin 'tpope/vim-sensible'               " sensible defaults
 
                                           " Command extensions
 Plugin 'tpope/vim-commentary'             " gc family of comment commands
