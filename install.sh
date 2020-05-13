@@ -3,21 +3,12 @@
 set -euxo pipefail
 
 INSTALLDIR=$HOME
-INSTALLCMD="dnf -y install"
+INSTALLCMD=""
 PWD=$(pwd)
-
-TERMINAL=""
-case "$1" in
-    "xfce") TERMINAL="xfce";;
-    "gnome") TERMINAL="gnome";;
-    *) echo "usage: install.sh [xfce|gnome]"; exit;;
-esac
-
-source /etc/os-release
 
 # install_github_bundle <user> <repo>
 install_github_bundle() {
-    echo "Installing bundle github.com/${1}/${2}..."
+    echo "Installing bundle github.com/${1}${2}..."
 
     local git_url="https://github.com/${1}/${2}.git"
     local bundle_dir="${INSTALLDIR}/.vim/bundle/${2}"
@@ -36,17 +27,21 @@ install_system_package() {
 }
 
 set_distro_install_cmd() {
+    source /etc/os-release
+
     local cmd=""
     case "${NAME}" in
         "Fedora")
-            if [ ! -z "$(which dnf)" ]; then
-                cmd="dnf -y -q install"
-            else
-                cmd="yum -y -q install"
-            fi
+            echo "RedHat distros not currently supported."
+            exit 1
+            # if [ ! -z "$(which dnf)" ]; then
+            #     cmd="dnf -y -q install"
+            # else
+            #     cmd="yum -y -q install"
+            # fi
             ;;
         "Ubuntu")
-            cmd="aptitude -y -q install"
+            cmd="apt-get -y -q install"
             ;;
         "Debian GNU/Linux")
             cmd="apt-get install -y -q"
@@ -73,79 +68,37 @@ LINKED_FILES=(
     ["vimrc"]="${INSTALLDIR}/.vimrc" \
     ["vimrc.bundles"]="${INSTALLDIR}/.vimrc.bundles" \
     ["gitconfig"]="${INSTALLDIR}/.gitconfig" \
-    ["bashrc"]="${INSTALLDIR}/.bashrc" \
 )
 
+# These are Debian-specific namings
 PACKAGES=(
-    "git" \
-    "vim" \
-    "tmux" \
-    "the_silver_searcher" \
+    "build-essential" \
     "ctags" \
-    "golang" \
-    "gotags" \
-    "python-pip" \
-    "gnupg2" \
-    "opensc" \
+    "curl" \
+    "git" \
+    "golang-1.14" \
+    "net-tools" \
+    "silversearcher-ag" \
+    "tmux" \
+    "vim" \
+    "zeal" \
 )
 
-echo "# Beginning dotfiles installation"
-
-echo "# Installing packages"
 set_distro_install_cmd
-for package in ${PACKAGES[@]}; do
-    install_system_package "${package}" 2>/dev/null
+echo "# Installing system packages"
+for package in ${PACKAGES[@]]}; do
+    install_system_packages "${package}" 2>/dev/null
 done
-
-echo "# Installing solarized colorscheme for your terminal"
-if [ ! -e "/usr/bin/dconf" ]; then
-    case "${DISTRO}" in
-        "Fedora")
-            install_system_package "dconf"
-            ;;
-        "Ubuntu")
-            install_system_package "dconf-cli"
-            ;;
-        "Debian GNU/Linux")
-            install_system_package "dconf-cli"
-            ;;
-    esac
-fi
-
-if [ $TERMINAL == "xfce" ]; then
-    echo "# Installing solarized-dark for xfce"
-    git clone "https://github.com/gtank/xfce4-terminal-colors-solarized.git" || true
-
-    if [[ -d xfce4-terminal-colors-solarized ]]; then
-        mkdir -p ~/.config/Terminal
-        if [ ! -e "~/.config/Terminal/terminalrc.bak" ]; then
-            cp ~/.config/Terminal/terminalrc ~/.config/Terminal/terminalrc.bak
-        fi
-        cp dark/terminalrc ~/.config/xfce4/terminal/terminalrc
-    else
-        echo "Failed to install xfce4 solarized!"
-    fi
-fi
-
-if [ $TERMINAL == "gnome" ]; then
-    echo "# Installing solarized for GNOME"
-    git clone "https://github.com/gtank/gnome-terminal-colors-solarized.git" || true
-    if [[ -d gnome-terminal-colors-solarized ]]; then
-        ./gnome-terminal-colors-solarized/install.sh
-    else
-        echo "Failed to install GNOME solarized!"
-    fi
-fi
 
 echo "# Copying local override files"
 for copy_file in "${!COPIED_FILES[@]}"; do
     target=${COPIED_FILES["${copy_file}"]}
     if [ ! -e "${target}" ]; then
-        echo -e "\t${copy_file} => ${target}"
+        -y echo -e "\t${copy_file} => ${target}"
         cp "${copy_file}" "${target}" 2>/dev/null
     fi
 done
-
+-y 
 echo "# Linking global config files"
 for file in "${!LINKED_FILES[@]}"; do
     target=${LINKED_FILES["${file}"]}
@@ -156,9 +109,14 @@ for file in "${!LINKED_FILES[@]}"; do
     ln -s "${PWD}/${file}" "${target}" 2>/dev/null
 done
 
-echo "# Installing vundle"
+# TODO: Use gimme, etc instead of doing this.
+echo "export PATH=$PATH:/usr/lib/go-1.14/bin:$HOME/go/bin" >> $HOME/.profile
+
+echo "# Configuring Vim"
 install_github_bundle "gmarik" "Vundle.vim"
 vim +PluginInstall +qall
-
-echo "# Installing vim-go tools"
 vim +GoInstallBinaries +qall
+go get -u https://github.com/jstemmer/gotags
+
+echo "# Installing Rust"
+./scripts/rustup.sh -q -y --default-toolchain stable --profile complete

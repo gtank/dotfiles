@@ -4,7 +4,7 @@
 " Let Vundle manage itself (required)
 Plugin 'gmarik/Vundle.vim'
 
-                                          " Interface
+" Interface
 Plugin 'ctrlpvim/ctrlp.vim'               " fuzzy file content search
 Plugin 'scrooloose/nerdtree'              " file browser
 Plugin 'majutsushi/tagbar'                " ctags sidebar
@@ -15,23 +15,22 @@ Plugin 'altercation/vim-colors-solarized' " solarized theme
 Plugin 'nathanaelkane/vim-indent-guides'  " visual indent levels
 Plugin 'tpope/vim-sensible'               " sensible defaults
 
-                                          " Command extensions
+" Command extensions
 Plugin 'tpope/vim-commentary'             " gc family of comment commands
 Plugin 'tpope/vim-repeat'                 " . repeat support for plugin maps
 Plugin 'tpope/vim-surround'               " changes surrounding text
 Plugin 'junegunn/vim-easy-align'          " newer Align
 
 
-                                          " External tools
+" External tools
 Plugin 'scrooloose/syntastic'             " external syntax checking
 Plugin 'mileszs/ack.vim'                  " ack w/ ag integration in vimrc
 Plugin 'tpope/vim-fugitive'               " git wrapper
 Plugin 'christoomey/vim-tmux-navigator'   " hjkl for tmux panes (see tmux.conf)
 Plugin 'tpope/vim-dispatch'               " async jobs with tmux/screen
 
-                                          " Filetype support
+" Filetype support
 Plugin 'fatih/vim-go'                     " extensive golang support
-Plugin 'pangloss/vim-javascript'          " js support
 Plugin 'godlygeek/tabular'                " tabular must come before vim-markdown
 Plugin 'plasticboy/vim-markdown'
 Plugin 'rust-lang/rust.vim'

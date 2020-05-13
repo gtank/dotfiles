@@ -1,4 +1,0 @@
-# machine-specific bashrc settings
-
-export QUBES_GPG_DOMAIN=vault
-alias cfenter="source $HOME/cf/cf-setup/cfsetup/bin/activate"

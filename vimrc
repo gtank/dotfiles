@@ -42,31 +42,35 @@ set whichwrap+=<,>,h,l,[,]  " wrap arrow keys between lines
 
 " === Command mappings === "
 
-let mapleader = ','
+nnoremap <space> <nop>
+let mapleader = ' '
 
 " In case you forgot to sudo
 cnoremap w!! %!sudo tee > /dev/null %
 
+" Get back to the code
+nnoremap <leader><space> :ccl<CR>:lcl<CR>
+
 " Tab navigation
-nnoremap <leader>= :tabn<CR>
-nnoremap <leader>- :tabp<CR>
+nnoremap <leader>] :tabn<CR>
+nnoremap <leader>[ :tabp<CR>
 
 " Clear trailing whitespace
-nnoremap <leader><space> :%s/\s\+$//<CR>
+nnoremap <leader>= :%s/\s\+$//<CR>
 
 " Reload vimrc
 nnoremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
-nmap <leader>l :EasyAlign
+" Plugin commands
+nnoremap <leader>\ :TagbarToggle<CR>
+nnoremap <leader>b :Git blame<CR>
+nnoremap <leader>g :GitGutterToggle<CR>
 nnoremap <leader>a :Ack<space>
-nnoremap <leader>b :CtrlPBuffer<CR>
-nnoremap <leader>t :CtrlP<CR>
-nnoremap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
-nnoremap <leader>] :TagbarToggle<CR>
-nnoremap <leader>B :Gblame<CR>
+
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
 
 " FYI: <leader>ig toggles indent guides
-
 
 " === NERDTree config === "
 
@@ -81,51 +85,54 @@ nnoremap <leader>f :NERDTreeFind<CR>
 
 let g:NERDSpaceDelims=1
 
-
 " === vim-go === "
 
 " Use vim-go calls only when editing Go files
-au FileType go nnoremap <leader>I :GoImports<CR>
-au FileType go nnoremap <leader>R :GoRename<CR>
-au FileType go nnoremap <leader>S <Plug>(go-implements)
-au FileType go let b:dispatch = 'go test'
+augroup golang
+    au!
+    au FileType go nnoremap <leader>I :GoImports<CR>
+    au FileType go nnoremap <leader>R :GoRename<CR>
+    au FileType go nnoremap <leader>S <Plug>(go-implements)
 
-" Run go-fmt on save
-let g:go_fmt_autosave = 1
+    au FileType go let b:dispatch = 'go test'
 
-" tagbar support for Go highlighting
-let g:tagbar_type_go = {
-    \ 'ctagstype' : 'go',
-    \ 'kinds'     : [
-        \ 'p:package',
-        \ 'i:imports:1',
-        \ 'c:constants',
-        \ 'v:variables',
-        \ 't:types',
-        \ 'n:interfaces',
-        \ 'w:fields',
-        \ 'e:embedded',
-        \ 'm:methods',
-        \ 'r:constructor',
-        \ 'f:functions'
-    \ ],
-    \ 'sro' : '.',
-    \ 'kind2scope' : {
-        \ 't' : 'ctype',
-        \ 'n' : 'ntype'
-    \ },
-    \ 'scope2kind' : {
-        \ 'ctype' : 't',
-        \ 'ntype' : 'n'
-    \ },
-    \ 'ctagsbin'  : 'gotags',
-    \ 'ctagsargs' : '-sort -silent'
-\ }
+    au FileType go let g:syntastic_go_checkers = ['golint', 'govet']
+    au FileType go let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 
+    au FileType go let g:go_fmt_autosave = 1
+
+    " tagbar support for Go highlighting
+    au FileType go let g:tagbar_type_go = {
+        \ 'ctagstype' : 'go',
+        \ 'kinds'     : [
+            \ 'p:package',
+            \ 'i:imports:1',
+            \ 'c:constants',
+            \ 'v:variables',
+            \ 't:types',
+            \ 'n:interfaces',
+            \ 'w:fields',
+            \ 'e:embedded',
+            \ 'm:methods',
+            \ 'r:constructor',
+            \ 'f:functions'
+        \ ],
+        \ 'sro' : '.',
+        \ 'kind2scope' : {
+            \ 't' : 'ctype',
+            \ 'n' : 'ntype'
+        \ },
+        \ 'scope2kind' : {
+            \ 'ctype' : 't',
+            \ 'ntype' : 'n'
+        \ },
+        \ 'ctagsbin'  : 'gotags',
+        \ 'ctagsargs' : '-sort -silent'
+    \ }
+augroup end
 
 " === gitgutter settings === "
 
-nnoremap <leader>G :GitGutterToggle<CR>
 let g:gitgutter_enabled = 0
 let g:gitgutter_highlight_lines = 1
 
@@ -149,11 +156,21 @@ if executable('ag')
   let g:ackprg = 'ag --vimgrep --smart-case'
 endif
 
+" === synastic === "
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 " === Filetypes === "
 
 " md is markdown
 autocmd BufRead,BufNewFile *.md set filetype=markdown
-
 
 " === Terminal settings === "
 
@@ -182,7 +199,6 @@ if !empty(glob("~/.vim/bundle/vim-colors-solarized/colors/solarized.vim"))
   " airline, the fancy statusbar
   let g:airline_theme='solarized'
 endif
-
 
 " === Locally-specific settings === "
 
